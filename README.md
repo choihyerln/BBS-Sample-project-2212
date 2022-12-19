@@ -1,4 +1,6 @@
-# 프론트엔드(HTML5, CSS3, JavaScript, jQuery) 강좌
+# BBS-Sample-project-2212
+
+Maven Sample Project - Bulletin Board Service(BBS)
 
 ### [멀티잇] 웹 서비스 개발자 취업캠프 (Java) 과정
 
