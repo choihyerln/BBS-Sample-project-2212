@@ -16,8 +16,15 @@ public class Board {
 	
 	public Board() {}
 	// 게시글 생성시 필요한 필드
-	public Board(int bid, String uid, String title, String content, String files) {
+	public Board(String uid, String title, String content, String files) {
 		this.uid = uid;
+		this.title = title;
+		this.content = content;
+		this.files = files;
+	}
+	// 게시글 수정시 필요한 생성자
+	public Board(int bid, String title, String content, String files) {
+		this.bid = bid;
 		this.title = title;
 		this.content = content;
 		this.files = files;

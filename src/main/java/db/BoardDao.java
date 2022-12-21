@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class BoardDao {
 		return conn;
 	}
 	
-	public List<Board> listUsers(String field, String query, int page) {
+	public List<Board> listBoard(String field, String query, int page) {
 		Connection conn = getConnection();
 		int offset = (page - 1) * 10;
 		String sql = "SELECT b.bid, b.uid, b.title, b.modTime, "
@@ -63,5 +64,130 @@ public class BoardDao {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	public int getBoardCount() {
+		Connection conn = getConnection();
+		String sql = "SELECT COUNT(title) FROM board WHERE isDeleted=0;";
+		int count = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				count = rs.getInt(1);
+			}
+			rs.close(); stmt.close(); conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	public void insertBoard(Board b) {
+		Connection conn = getConnection();
+		String sql = "INSERT INTO board(uid, title, content, files) VALUES (?, ?, ?, ?);";
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, b.getUid());
+			pStmt.setString(2, b.getTitle());
+			pStmt.setString(3, b.getContent());
+			pStmt.setString(4, b.getFiles());
+			
+			pStmt.executeUpdate();
+			pStmt.close(); conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Board getBoardDetail(int bid) {
+		Connection conn = getConnection();
+		String sql = "SELECT b.bid, b.uid, b.title, b.content, b.modTime, b.viewCount,"
+				+ "	b.replyCount, b.files, u.uname FROM board AS b"
+				+ "	JOIN users AS u"
+				+ "	ON b.uid=u.uid"
+				+ "	WHERE b.bid=?";
+		Board b = new Board();
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, bid);
+			
+			ResultSet rs = pStmt.executeQuery();
+			while (rs.next()) {
+				b.setBid(rs.getInt(1));
+				b.setUid(rs.getString(2));
+				b.setTitle(rs.getString(3));
+				b.setContent(rs.getString(4));
+				// 2022-12-20 14:09:54 ==> 2022-12-20T14:09:54
+				b.setModTime(LocalDateTime.parse(rs.getString(5).replace(" ","T")));
+				b.setViewCount(rs.getInt(6));
+				b.setReplyCount(rs.getInt(7));
+				b.setFiles(rs.getString(8));
+				b.setUname(rs.getString(9));
+			}
+			rs.close(); pStmt.close(); conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return b;
+	}
+	
+	public void increaseViewCount(int bid) {
+		Connection conn = getConnection();
+		String sql = "UPDATE board SET viewCount=viewCount+1 WHERE bid=?;";
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, bid);
+			
+			pStmt.executeUpdate();
+			pStmt.close(); conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void increaseReplyCount(int bid) {
+		Connection conn = getConnection();
+		String sql = "UPDATE board SET replyCount=replyCount+1 WHERE bid=?;";
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, bid);
+			
+			pStmt.executeUpdate();
+			pStmt.close(); conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteBoard(int bid) {
+		Connection conn = getConnection();
+		String sql = "UPDATE board SET isDeleted=1 WHERE bid=?;";
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, bid);
+			
+			pStmt.executeUpdate();
+			pStmt.close(); conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateBoard(Board b) {
+		Connection conn = getConnection();
+		String sql = "UPDATE board SET title=?, content=?, modTime=NOW(), files=? WHERE bid=?;";
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, b.getTitle());
+			pStmt.setString(2, b.getContent());
+			pStmt.setString(3, b.getFiles());
+			pStmt.setInt(4, b.getBid());
+			
+			pStmt.executeUpdate();
+			pStmt.close(); conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

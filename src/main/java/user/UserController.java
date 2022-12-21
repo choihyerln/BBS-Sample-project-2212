@@ -86,7 +86,7 @@ public class UserController extends HttpServlet {
 			break;
 		case "logout":
 			session.invalidate();
-			response.sendRedirect("/bbs/user/login");
+			response.sendRedirect("/bbs/user/login.jsp");
 			break;
 		case "register":
 			if (request.getMethod().equals("GET")) {
