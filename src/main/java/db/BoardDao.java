@@ -66,17 +66,21 @@ public class BoardDao {
 		return list;
 	}
 
-	public int getBoardCount() {
+	public int getBoardCount(String field, String query) {
 		Connection conn = getConnection();
-		String sql = "SELECT COUNT(title) FROM board WHERE isDeleted=0;";
+		String sql = "SELECT COUNT(bid) FROM board AS b"
+				+ "	JOIN users AS u"
+				+ "	ON b.uid=u.uid"
+				+ "	WHERE b.isDeleted=0 AND " + field + " LIKE ?;";
 		int count = 0;
 		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, "%"+query+"%");
+			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {
 				count = rs.getInt(1);
 			}
-			rs.close(); stmt.close(); conn.close();
+			rs.close(); pStmt.close(); conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -176,7 +180,8 @@ public class BoardDao {
 	
 	public void updateBoard(Board b) {
 		Connection conn = getConnection();
-		String sql = "UPDATE board SET title=?, content=?, modTime=NOW(), files=? WHERE bid=?;";
+		String sql = "UPDATE board SET title=?, content=?, "
+				   + "	modTime=NOW(), files=? WHERE bid=?;";
 		try {
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, b.getTitle());

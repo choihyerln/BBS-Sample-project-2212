@@ -23,7 +23,7 @@
             <div class="col-sm-9">
                 <h3><strong>게시글 상세 조회</strong>
                 	<span style="font-size: 0.6em;">
-                        <a href="/bbs/board/list?page=${currentBoardPage}" class="ms-5"><i class="fas fa-list-ul"></i> 목록</a>
+                        <a href="/bbs/board/list?p=${currentBoardPage}&f=&q=" class="ms-5"><i class="fas fa-list-ul"></i> 목록</a>
                     
                     <!-- 본인만 수정 가능 -->
                     <c:if test="${board.uid eq uid}">
@@ -58,50 +58,52 @@
                     <div class="col-12">
                         ${fn:replace(board.content, newline, '<br>')}
                     </div>
-                    
+
                     <div class="col-12"><hr></div>
                     <div class="col-12">
-                    	<c:forEach var="reply" items="${replyList}">
-	                    	<c:if test="${reply.isMine eq 0}">
-	                        <div class="d-flex flex-row mt-1">
-	                            <div class="card bg-light text-dark w-75">
-	                                <div class="card-body">
-	                                    ${reply.uname}&nbsp;&nbsp;${fn:replace(reply.regDate, 'T', ' ')}<br>
-	                                    ${fn:replace(reply.content, newline, '<br>')}  <!-- content -->
-	                                </div>
-	                            </div>
-	                        </div>
-	                    </c:if>
-	                    <c:if test="${reply.isMine eq 1}">
-	                    <div class="d-flex flex-row-reverse mt-1">
-	                        <div class="card w-75">
-	                            <div class="card-body text-end">
-	                                ${reply.uname}&nbsp;&nbsp;${fn:replace(reply.regDate, 'T', ' ')}<br>
-	                                ${fn:replace(reply.content, newline, '<br>')}  <!-- content -->
-	                            </div>
-	                        </div>
-	                    </div>
-	                    </c:if>
+                    <c:forEach var="reply" items="${replyList}">
+                    <c:if test="${reply.isMine eq 0}">
+                        <div class="d-flex flex-row mt-1">
+                            <div class="card bg-light text-dark w-75">
+                                <div class="card-body">
+                                    ${reply.uname}&nbsp;&nbsp;${fn:replace(reply.regDate, 'T', ' ')}<br>  
+                                    ${fn:replace(reply.content, newline, '<br>')}  <!-- content -->
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+                    <c:if test="${reply.isMine eq 1}">
+                        <div class="d-flex flex-row-reverse mt-1">
+                            <div class="card w-75">
+                                <div class="card-body text-end">
+                                    ${reply.uname}&nbsp;&nbsp;${fn:replace(reply.regDate, 'T', ' ')}<br>  
+                                    ${fn:replace(reply.content, newline, '<br>')}  <!-- content -->
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
                     </c:forEach>
-                    <form class="form-inline" action="/bbs/board/reply" method="post">
-                        <input type="hidden" name="bid" value="${board.bid}">     <!-- bid -->
-                        <input type="hidden" name="uid" value="${board.uid}">     <!-- uid -->
-                        <table class="table table-borderless mt-2">
-                            <tr class="d-flex">
-                                <td class="col-1 text-end">
-                                    <label for="content">댓글</label>
-                                </td>
-                                <td class="col-9">
-                                    <textarea class="form-control" id="content" name="content" rows="3"></textarea>
-                                </td>
-                                <td class="col-2">
-                                    <button type="submit" class="btn btn-primary">제출</button>
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                  </div>
+                            
+                        <form class="form-inline" action="/bbs/board/reply" method="post">
+                            <input type="hidden" name="bid" value="${board.bid}">     <!-- bid -->
+                            <input type="hidden" name="uid" value="${board.uid}">     <!-- uid -->
+                            <table class="table table-borderless mt-2">
+                                <tr class="d-flex">
+                                    <td class="col-1 text-end">
+                                        <label for="content">댓글</label>
+                                    </td>
+                                    <td class="col-9">
+                                        <textarea class="form-control" id="content" name="content" rows="3"></textarea>
+                                    </td>
+                                    <td class="col-2">
+                                        <button type="submit" class="btn btn-primary">제출</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>

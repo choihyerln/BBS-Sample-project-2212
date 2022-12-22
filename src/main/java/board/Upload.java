@@ -1,7 +1,10 @@
 package board;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,17 +19,16 @@ import javax.servlet.http.Part;
 /**
  * Servlet implementation class Upload
  */
-@WebServlet("/board/upload")
+@WebServlet("/board/testupload")
 @MultipartConfig(
 	    fileSizeThreshold = 1024 * 1024 * 1, // 1 MB
 	    maxFileSize = 1024 * 1024 * 10,      // 10 MB
 	    maxRequestSize = 1024 * 1024 * 100   // 100 MB
-	)
+)
 public class Upload extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String tmpPath = "/tmp/upload";
-        System.out.println("tmpPath: " + tmpPath);
         File file = new File(tmpPath);
         if(!file.exists()) 
             file.mkdirs();
@@ -48,12 +50,11 @@ public class Upload extends HttpServlet {
 //                part.write(tmpPath + File.separator + fileName);
 //            }
 //        }
-        
-        response.setCharacterEncoding("utf-8");
-        Part filePart = null;
+        	
+        Part filePart = null;	
         List<String> fileList = new ArrayList<>();
-        for (int i=1; i<=4; i++) {
-            filePart = request.getPart("file" + i);			// name이 file1, file2
+        for (int i=1; i<=2; i++) {
+            filePart = request.getPart("file" + i);		// name이 file1, file2
             if (filePart == null)
             	continue;
             fileName = filePart.getSubmittedFileName();
@@ -62,10 +63,15 @@ public class Upload extends HttpServlet {
                 continue;
             fileList.add(fileName);
             
-            for (Part part : request.getParts()) {
-                part.write(tmpPath + File.separator + fileName);
-            }
+//            ByteArrayInputStream bis = (ByteArrayInputStream) filePart.getInputStream();
+//            byte[] buffer = bis.readAllBytes();
+//            OutputStream fos = new FileOutputStream(tmpPath + File.separator + fileName);
+//            fos.write(buffer);
+			for (Part part : request.getParts()) { 
+				part.write(tmpPath + File.separator + fileName); 
+			}
+            response.getWriter().print("The file is uploaded sucessfully.");	
         }
-        response.getWriter().print("The file is uploaded sucessfully.");	
 	}
+
 }
