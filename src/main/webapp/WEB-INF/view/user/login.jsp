@@ -9,7 +9,7 @@
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
         <div class="container-fluid">
-            <img src="/bbs/img/ckworld-logo.png" alt="Logo" style="height:60px;" class="rounded-3 mx-2">
+            <img src="../img/homepage.png" alt="Logo" style="height:60px;" class="rounded-3 mx-2">
             <div class="p-2 bg-dark justify-content-center rounded">
                 <img src="https://picsum.photos/1500/200" width="100%">
             </div>
@@ -22,7 +22,7 @@
                 <h3>
                     <strong>로그인</strong>
                     <span style="font-size: 0.6em;">
-                        <a href="/bbs/user/register.jsp" class="ms-5"><i class="fas fa-user-plus"></i> 회원가입</a>
+                        <a href="/bbs/user/register" class="ms-5"><i class="fas fa-user-plus"></i> 회원가입</a>
                     </span>
                 </h3>
                 <hr>

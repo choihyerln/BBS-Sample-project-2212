@@ -2,6 +2,8 @@ package board;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +20,16 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import misc.JSONUtil;
 
-@WebServlet("/board/fileupload")
-public class FileUpload extends HttpServlet {
+@WebServlet("/board/imageupload")
+public class ImageUpload extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String tmpPath = "/tmp/upload";
-		request.setCharacterEncoding("utf-8");
-		response.setContentType("text/html;charset=utf-8");
+		String callback = request.getParameter("CKEditorFuncNum");
+		//System.out.println(callback);
+		String error = "";
+		String url = null;		// 이미지 다운로드 주소
 
 		/** 업로드된 파일을 저장할 저장소 */
 		DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -42,28 +46,35 @@ public class FileUpload extends HttpServlet {
 			List<String> fileList = new ArrayList<>();
 			/** 파일 저장 */
 			for (FileItem i : items) {
-				// 첨부 파일일 때
+				// 이미지 파일일 때
 				if (!i.isFormField() && i.getSize() > 0) {
 					String fileName = i.getName();
-					File uploadFile = new File(tmpPath + File.separator + fileName);
+					String now = LocalDateTime.now().toString().substring(0,22).replaceAll("[-T:.]", "");
+					int idx = fileName.lastIndexOf('.');
+					fileName = now + fileName.substring(idx);	// 유니크한 파일 이름으로 변경
+					String fullPath = tmpPath + "/" + fileName;
+					File uploadFile = new File(fullPath);
 					i.write(uploadFile); 	// 임시 파일을 파일로 씀
-					// System.out.println(fileName);
-					fileList.add(fileName);
+
+				url = "/bbs/board/download?file=" + fileName;
+					
 				}
 				// 다른 타입 request일 때
 				else if (i.isFormField()) {
-					// System.out.println(i.getContentType());
-					request.setAttribute(i.getFieldName(), i.getString("UTF-8"));
-					// System.out.println(i.getFieldName() + i.getString("UTF-8"));
+					//System.out.println(i.getFieldName() + i.getString("UTF-8"));
 				}
 			}
-			JSONUtil json = new JSONUtil();
-			String jsonList = json.stringify(fileList);
-			request.setAttribute("files", jsonList);
-			RequestDispatcher rd = request.getRequestDispatcher("/board/write");
-			rd.forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		String data = "<script> "
+                + "     window.parent.CKEDITOR.tools.callFunction(" 
+                +           callback + ", '" + url + "', '" + error + "'); "
+                + "</script>";
+		//System.out.println(data);
+		response.setContentType("text/html;charset=utf-8");
+		PrintWriter out = response.getWriter();
+		out.println(data);
 	}
 }
