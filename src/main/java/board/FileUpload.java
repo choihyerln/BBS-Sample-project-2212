@@ -25,7 +25,7 @@ public class FileUpload extends HttpServlet {
 			throws ServletException, IOException {
 		String tmpPath = "/tmp/upload";
 		request.setCharacterEncoding("utf-8");
-		response.setContentType("text/html;charset=utf-8");
+		String dest = request.getParameter("dest");
 
 		/** 업로드된 파일을 저장할 저장소 */
 		DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -60,7 +60,7 @@ public class FileUpload extends HttpServlet {
 			JSONUtil json = new JSONUtil();
 			String jsonList = json.stringify(fileList);
 			request.setAttribute("files", jsonList);
-			RequestDispatcher rd = request.getRequestDispatcher("/board/write");
+			RequestDispatcher rd = request.getRequestDispatcher("/board/" + dest);
 			rd.forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -22,7 +22,7 @@
             	<h3><strong>게시글 쓰기</strong></h3>
             	<hr>
                 <div class="row">
-		            <form action="/bbs/board/fileupload" method="post" enctype="multipart/form-data">
+		            <form action="/bbs/board/fileupload?dest=write" method="post" enctype="multipart/form-data">
 		                <table class="table table-borderless">
 		                    <tr class="d-flex">
 		                        <td><label for="title">제목</label></td>
